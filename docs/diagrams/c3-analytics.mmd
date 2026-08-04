@@ -1,0 +1,19 @@
+flowchart LR
+
+    router["FastAPI Router"]
+
+    service["Analytics Service"]
+
+    repository["Repository"]
+
+    cache[("Redis Cache")]
+
+    postgres[("PostgreSQL")]
+
+    router --> service
+
+    service --> cache
+
+    service --> repository
+
+    repository --> postgres

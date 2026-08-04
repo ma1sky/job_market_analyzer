@@ -1,0 +1,42 @@
+flowchart LR
+
+    %% External
+    user([User])
+    admin([Administrator])
+
+    sites["Job Sites<br/>HH, Habr Career, RemoteOK"]
+
+    %% System Boundary
+    subgraph system["Job Market Analyzer"]
+
+        dashboard["Dashboard<br/>React"]
+
+        analytics["Analytics Service<br/>FastAPI"]
+
+        scraper["Scraper Service<br/>Python"]
+
+        etl["ETL Service<br/>Python"]
+
+        redis[("Redis<br/>Queue / Cache")]
+
+        postgres[("PostgreSQL")]
+    end
+
+    %% User interactions
+    user -->|"View dashboards"| dashboard
+    user -->|"REST API"| analytics
+    admin -->|"Configure scraping"| scraper
+
+    %% Internal
+    dashboard -->|"REST API"| analytics
+
+    scraper -->|"HTTPS"| sites
+    scraper -->|"Publish vacancies"| redis
+
+    redis -->|"Consume vacancies"| etl
+
+    etl -->|"INSERT / UPDATE"| postgres
+
+    analytics -->|"SELECT"| postgres
+
+    analytics -.->|"Cache"| redis

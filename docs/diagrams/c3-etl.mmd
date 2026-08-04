@@ -1,0 +1,27 @@
+flowchart LR
+
+    redis[("Redis Queue")]
+
+    consumer["Queue Consumer"]
+
+    transformer["Transformer"]
+
+    validator["Validator"]
+
+    deduplicator["Deduplicator"]
+
+    repository["Repository"]
+
+    postgres[("PostgreSQL")]
+
+    redis --> consumer
+
+    consumer --> transformer
+
+    transformer --> validator
+
+    validator --> deduplicator
+
+    deduplicator --> repository
+
+    repository --> postgres

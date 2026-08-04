@@ -1,0 +1,32 @@
+
+flowchart LR
+
+    scheduler["Scheduler"]
+
+    orchestrator["Scraper Orchestrator"]
+
+    hh["HH Scraper"]
+    habr["Habr Scraper"]
+    remote["RemoteOK Scraper"]
+
+    mapper["DTO Mapper"]
+
+    redis[("Redis Queue")]
+
+    sites["Job Sites"]
+
+    scheduler --> orchestrator
+
+    orchestrator --> hh
+    orchestrator --> habr
+    orchestrator --> remote
+
+    hh --> sites
+    habr --> sites
+    remote --> sites
+
+    hh --> mapper
+    habr --> mapper
+    remote --> mapper
+
+    mapper -->|"VacancyDTO"| redis
