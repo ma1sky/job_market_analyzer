@@ -1,42 +1,86 @@
 flowchart LR
 
-    %% External
-    user([User])
-    admin([Administrator])
+%% ============================================================
+%% External Actors
+%% ============================================================
 
-    sites["Job Sites<br/>HH, Habr Career, RemoteOK"]
+user(["👤 User"])
+admin(["🛠️ Administrator"])
 
-    %% System Boundary
-    subgraph system["Job Market Analyzer"]
+sites["🌐 Job Sites<br/>HH • Habr Career • RemoteOK"]
 
-        dashboard["Dashboard<br/>React"]
+%% ============================================================
+%% Job Market Analyzer
+%% ============================================================
 
-        analytics["Analytics Service<br/>FastAPI"]
+subgraph system["🏢 Job Market Analyzer"]
 
-        scraper["Scraper Service<br/>Python"]
+    direction LR
 
-        etl["ETL Service<br/>Python"]
-
-        redis[("Redis<br/>Queue / Cache")]
-
-        postgres[("PostgreSQL")]
+    %% ---------- Frontend ----------
+    subgraph frontend["🖥️ Frontend"]
+        dashboard["📈 Dashboard<br/>React"]
     end
 
-    %% User interactions
-    user -->|"View dashboards"| dashboard
-    user -->|"REST API"| analytics
-    admin -->|"Configure scraping"| scraper
+    %% ---------- Backend ----------
+    subgraph backend["⚙️ Backend"]
 
-    %% Internal
-    dashboard -->|"REST API"| analytics
+        analytics["🚀 Analytics Service<br/>FastAPI"]
 
-    scraper -->|"HTTPS"| sites
-    scraper -->|"Publish vacancies"| redis
+        scraper["🕷️ Scraper Service<br/>Python"]
 
-    redis -->|"Consume vacancies"| etl
+        etl["⚙️ ETL Service<br/>Python"]
 
-    etl -->|"INSERT / UPDATE"| postgres
+    end
 
-    analytics -->|"SELECT"| postgres
+    %% ---------- Infrastructure ----------
+    subgraph infrastructure["🗄️ Infrastructure"]
 
-    analytics -.->|"Cache"| redis
+        redis[("🟥 Redis<br/>Queue / Cache")]
+
+        postgres[("🐘 PostgreSQL")]
+
+    end
+
+end
+
+%% ============================================================
+%% User interactions
+%% ============================================================
+
+user -->|"View dashboards"| dashboard
+user -->|"REST API"| analytics
+
+admin -->|"Configure scraping"| scraper
+
+%% ============================================================
+%% Internal communication
+%% ============================================================
+
+dashboard -->|"REST API"| analytics
+
+scraper -->|"HTTPS"| sites
+scraper -->|"Publish DTO"| redis
+
+redis -->|"Consume"| etl
+
+etl -->|"INSERT / UPDATE"| postgres
+
+analytics -->|"SELECT"| postgres
+analytics -.->|"Cache"| redis
+
+%% ============================================================
+%% Styles
+%% ============================================================
+
+class user,admin actor
+
+class dashboard dashboard
+
+class scraper,etl,analytics service
+
+class postgres database
+
+class redis cache
+
+class sites external

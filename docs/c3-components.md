@@ -3,35 +3,53 @@
 ```mermaid
 flowchart LR
 
-    scheduler["Scheduler"]
+sites["🌐 Job Sites"]
 
-    orchestrator["Scraper Orchestrator"]
+redis[("🟥 Redis Queue")]
 
-    hh["HH Scraper"]
-    habr["Habr Scraper"]
-    remote["RemoteOK Scraper"]
+subgraph scraper["🕷️ Scraper Service"]
 
-    mapper["DTO Mapper"]
+    direction TB
 
-    redis[("Redis Queue")]
+    scheduler["⏰ Scheduler"]
 
-    sites["Job Sites"]
+    coordinator["🎯 Scraper Coordinator"]
 
-    scheduler --> orchestrator
+    subgraph parsers["📄 Site Parsers"]
 
-    orchestrator --> hh
-    orchestrator --> habr
-    orchestrator --> remote
+        hh["HH Parser"]
 
-    hh --> sites
-    habr --> sites
-    remote --> sites
+        habr["Habr Parser"]
 
-    hh --> mapper
-    habr --> mapper
-    remote --> mapper
+        remote["RemoteOK Parser"]
 
-    mapper -->|"VacancyDTO"| redis
+    end
+
+    normalize["🧩 Normalization Layer"]
+
+end
+
+scheduler --> coordinator
+
+coordinator --> hh
+coordinator --> habr
+coordinator --> remote
+
+hh -->|"HTTPS"| sites
+habr -->|"HTTPS"| sites
+remote -->|"HTTPS"| sites
+
+hh --> normalize
+habr --> normalize
+remote --> normalize
+
+normalize -->|"Publish DTO"| redis
+
+class scheduler,coordinator,hh,habr,remote,normalize service
+
+class redis cache
+
+class sites external
 ```
 
 # C3 - ETL Service
@@ -39,31 +57,43 @@ flowchart LR
 ```mermaid
 flowchart LR
 
-    redis[("Redis Queue")]
+redis[("🟥 Redis Queue")]
 
-    consumer["Queue Consumer"]
+postgres[("🐘 PostgreSQL")]
 
-    transformer["Transformer"]
+subgraph etl["⚙️ ETL Service"]
 
-    validator["Validator"]
+    direction LR
 
-    deduplicator["Deduplicator"]
+    consumer["📨 Queue Consumer"]
 
-    repository["Repository"]
+    normalize["🧩 Normalization Layer"]
 
-    postgres[("PostgreSQL")]
+    enrich["✨ Enrichment Layer"]
 
-    redis --> consumer
+    validate["✅ Validation Layer"]
 
-    consumer --> transformer
+    persistence["🗄️ Persistence Layer"]
 
-    transformer --> validator
+end
 
-    validator --> deduplicator
+redis -->|"Consume DTO"| consumer
 
-    deduplicator --> repository
+consumer --> normalize
 
-    repository --> postgres
+normalize --> enrich
+
+enrich --> validate
+
+validate --> persistence
+
+persistence -->|"INSERT / UPDATE"| postgres
+
+class consumer,normalize,enrich,validate,persistence service
+
+class postgres database
+
+class redis cache
 ```
 
 # C3 - Analytics Service
@@ -71,21 +101,30 @@ flowchart LR
 ```mermaid
 flowchart LR
 
-    router["FastAPI Router"]
+postgres[("🐘 PostgreSQL")]
+redis[("🟥 Redis Cache")]
 
-    service["Analytics Service"]
+subgraph analytics["📊 Analytics Service"]
 
-    repository["Repository"]
+    direction LR
 
-    cache[("Redis Cache")]
+    api["🚀 API Layer"]
 
-    postgres[("PostgreSQL")]
+    engine["📈 Analytics Engine"]
 
-    router --> service
+    persistence["🗄️ Persistence Layer"]
 
-    service --> cache
+end
 
-    service --> repository
+api -->|"Process request"| engine
 
-    repository --> postgres
+engine -->|"Cache lookup"| redis
+
+engine -->|"Read data"| persistence
+
+persistence -->|"SELECT"| postgres
+
+class api,engine,persistence service
+class postgres database
+class redis cache
 ```

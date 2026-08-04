@@ -1,27 +1,39 @@
 flowchart LR
 
-    redis[("Redis Queue")]
+redis[("🟥 Redis Queue")]
 
-    consumer["Queue Consumer"]
+postgres[("🐘 PostgreSQL")]
 
-    transformer["Transformer"]
+subgraph etl["⚙️ ETL Service"]
 
-    validator["Validator"]
+    direction LR
 
-    deduplicator["Deduplicator"]
+    consumer["📨 Queue Consumer"]
 
-    repository["Repository"]
+    normalize["🧩 Normalization Layer"]
 
-    postgres[("PostgreSQL")]
+    enrich["✨ Enrichment Layer"]
 
-    redis --> consumer
+    validate["✅ Validation Layer"]
 
-    consumer --> transformer
+    persistence["🗄️ Persistence Layer"]
 
-    transformer --> validator
+end
 
-    validator --> deduplicator
+redis -->|"Consume DTO"| consumer
 
-    deduplicator --> repository
+consumer --> normalize
 
-    repository --> postgres
+normalize --> enrich
+
+enrich --> validate
+
+validate --> persistence
+
+persistence -->|"INSERT / UPDATE"| postgres
+
+class consumer,normalize,enrich,validate,persistence service
+
+class postgres database
+
+class redis cache

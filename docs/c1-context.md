@@ -3,17 +3,45 @@
 ```mermaid
 flowchart LR
 
-    user([User])
-    admin([Administrator])
+%% ============================================================
+%% External Actors
+%% ============================================================
 
-    app["Job Market Analyzer"]
+user(["👤 User"])
+admin(["🛠️ Administrator"])
 
-    sites["Job Sites\nHH, Habr, RemoteOK"]
-    dashboard["Dashboard"]
+sites["🌐 Job Sites<br/>HH • Habr Career • RemoteOK"]
 
-    user -->|"View dashboards"| dashboard
-    dashboard -->|"REST API"| app
-    admin -->|"Configure scraping"| app
-    app -->|"HTTPS"| sites
-    user -->|"REST API"| app
+%% ============================================================
+%% System
+%% ============================================================
+
+subgraph system["🏢 Job Market Analyzer"]
+
+    dashboard["📈 Dashboard"]
+    app["🚀 Analytics API"]
+
+end
+
+%% ============================================================
+%% Relationships
+%% ============================================================
+
+user -->|"View dashboards"| dashboard
+dashboard -->|"REST API"| app
+
+user -->|"REST API"| app
+
+admin -->|"Configure scraping"| app
+
+app -->|"HTTPS"| sites
+
+%% ============================================================
+%% Styles
+%% ============================================================
+
+class user,admin actor
+class app service
+class dashboard dashboard
+class sites external
 ```

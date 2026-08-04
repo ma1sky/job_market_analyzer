@@ -1,0 +1,121 @@
+%%{
+init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#0D1117",
+
+    "primaryColor": "#1F2937",
+    "primaryBorderColor": "#58A6FF",
+    "primaryTextColor": "#F0F6FC",
+
+    "secondaryColor": "#161B22",
+    "secondaryBorderColor": "#7EE787",
+    "secondaryTextColor": "#F0F6FC",
+
+    "tertiaryColor": "#21262D",
+    "tertiaryBorderColor": "#D2A8FF",
+    "tertiaryTextColor": "#F0F6FC",
+
+    "lineColor": "#8B949E",
+
+    "clusterBkg": "#161B22",
+    "clusterBorder": "#30363D",
+
+    "edgeLabelBackground": "#0D1117",
+
+    "fontFamily": "Inter, Segoe UI, Arial",
+    "fontSize": "15px"
+  },
+  "flowchart": {
+    "curve": "basis",
+    "nodeSpacing": 60,
+    "rankSpacing": 80,
+    "padding": 10,
+    "htmlLabels": true
+  }
+}
+}%%
+
+flowchart LR
+
+%% ============================================================
+%%                       DIAGRAM
+%% ============================================================
+
+%% Example:
+%%
+%% user(["👤 User"])
+%% api["🚀 Analytics API"]
+%% postgres[("🐘 PostgreSQL")]
+%%
+%% user -->|"REST API"| api
+%% api -->|"SELECT"| postgres
+
+%% ============================================================
+%%                        STYLES
+%% ============================================================
+
+classDef actor fill:#21262D,stroke:#8B949E,stroke-width:2px,color:#F0F6FC;
+
+classDef service fill:#1F2937,stroke:#58A6FF,stroke-width:2px,color:#F0F6FC;
+
+classDef database fill:#0E4429,stroke:#3FB950,stroke-width:2px,color:#F0F6FC;
+
+classDef cache fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef queue fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef dashboard fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+
+classDef external fill:#2D1B16,stroke:#FF7B72,stroke-width:2px,color:#F0F6FC;
+
+classDef storage fill:#0E4429,stroke:#2EA043,stroke-width:2px,color:#F0F6FC;
+
+classDef scheduler fill:#3A2F00,stroke:#D29922,stroke-width:2px,color:#F0F6FC;
+
+classDef message fill:#2D333B,stroke:#768390,stroke-width:1px,color:#F0F6FC;
+
+%% ============================================================
+%%                       ICON GUIDE
+%% ============================================================
+
+%% 👤 User
+%% 🛠️ Administrator
+%% 🌐 External System
+%% 🕷️ Scraper Service
+%% ⚙️ ETL Service
+%% 📊 Analytics Service
+%% 📈 Dashboard
+%% 🚀 REST API
+%% 🟥 Redis
+%% 🐘 PostgreSQL
+%% 📨 Queue
+%% ⏰ Scheduler
+%% 📦 Docker
+%% ☁️ Cloud
+
+%% ============================================================
+%%                      SHAPE GUIDE
+%% ============================================================
+
+%% User
+%% user(["👤 User"])
+
+%% Service
+%% api["🚀 Analytics API"]
+
+%% Database
+%% db[("🐘 PostgreSQL")]
+
+%% Queue / Redis
+%% redis[("🟥 Redis")]
+
+%% External System
+%% ext["🌐 Job Sites"]
+
+%% Group
+%%
+%% subgraph backend["Backend"]
+%%     api
+%%     service
+%% end

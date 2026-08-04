@@ -1,19 +1,28 @@
 flowchart LR
 
-    router["FastAPI Router"]
+postgres[("🐘 PostgreSQL")]
+redis[("🟥 Redis Cache")]
 
-    service["Analytics Service"]
+subgraph analytics["📊 Analytics Service"]
 
-    repository["Repository"]
+    direction LR
 
-    cache[("Redis Cache")]
+    api["🚀 API Layer"]
 
-    postgres[("PostgreSQL")]
+    engine["📈 Analytics Engine"]
 
-    router --> service
+    persistence["🗄️ Persistence Layer"]
 
-    service --> cache
+end
 
-    service --> repository
+api -->|"Process request"| engine
 
-    repository --> postgres
+engine -->|"Cache lookup"| redis
+
+engine -->|"Read data"| persistence
+
+persistence -->|"SELECT"| postgres
+
+class api,engine,persistence service
+class postgres database
+class redis cache

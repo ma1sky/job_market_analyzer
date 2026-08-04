@@ -1,32 +1,49 @@
-
 flowchart LR
 
-    scheduler["Scheduler"]
+sites["🌐 Job Sites"]
 
-    orchestrator["Scraper Orchestrator"]
+redis[("🟥 Redis Queue")]
 
-    hh["HH Scraper"]
-    habr["Habr Scraper"]
-    remote["RemoteOK Scraper"]
+subgraph scraper["🕷️ Scraper Service"]
 
-    mapper["DTO Mapper"]
+    direction TB
 
-    redis[("Redis Queue")]
+    scheduler["⏰ Scheduler"]
 
-    sites["Job Sites"]
+    coordinator["🎯 Scraper Coordinator"]
 
-    scheduler --> orchestrator
+    subgraph parsers["📄 Site Parsers"]
 
-    orchestrator --> hh
-    orchestrator --> habr
-    orchestrator --> remote
+        hh["HH Parser"]
 
-    hh --> sites
-    habr --> sites
-    remote --> sites
+        habr["Habr Parser"]
 
-    hh --> mapper
-    habr --> mapper
-    remote --> mapper
+        remote["RemoteOK Parser"]
 
-    mapper -->|"VacancyDTO"| redis
+    end
+
+    normalize["🧩 Normalization Layer"]
+
+end
+
+scheduler --> coordinator
+
+coordinator --> hh
+coordinator --> habr
+coordinator --> remote
+
+hh -->|"HTTPS"| sites
+habr -->|"HTTPS"| sites
+remote -->|"HTTPS"| sites
+
+hh --> normalize
+habr --> normalize
+remote --> normalize
+
+normalize -->|"Publish DTO"| redis
+
+class scheduler,coordinator,hh,habr,remote,normalize service
+
+class redis cache
+
+class sites external
