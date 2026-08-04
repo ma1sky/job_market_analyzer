@@ -1,0 +1,15 @@
+flowchart LR
+
+    user([User])
+    admin([Administrator])
+
+    app["Job Market Analyzer"]
+
+    sites["Job Sites\nHH, Habr, RemoteOK"]
+    dashboard["Dashboard"]
+
+    user -->|"View dashboards"| dashboard
+    dashboard -->|"REST API"| app
+    admin -->|"Configure scraping"| app
+    app -->|"HTTPS"| sites
+    user -->|"REST API"| app
