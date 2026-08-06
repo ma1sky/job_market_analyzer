@@ -1,0 +1,88 @@
+%%{
+init: {
+  "theme": "dark",
+  "themeVariables": {
+
+    "background": "#0D1117",
+
+    "primaryColor": "#161B22",
+    "primaryBorderColor": "#58A6FF",
+    "primaryTextColor": "#F0F6FC",
+
+    "secondaryColor": "#21262D",
+    "secondaryBorderColor": "#7EE787",
+    "secondaryTextColor": "#F0F6FC",
+
+    "tertiaryColor": "#1F2937",
+    "tertiaryBorderColor": "#BC8CFF",
+    "tertiaryTextColor": "#F0F6FC",
+
+    "lineColor": "#8B949E",
+
+    "fontFamily": "Inter, Segoe UI, Arial",
+    "fontSize": "15px"
+  }
+}
+}%%
+
+erDiagram
+
+    SOURCE ||--o{ VACANCY : provides
+    COMPANY ||--o{ VACANCY : hires
+    LOCATION ||--o{ VACANCY : located_in
+    SALARY ||--|| VACANCY : describes
+    VACANCY ||--o{ VACANCY_TECHNOLOGY : has
+    TECHNOLOGY ||--o{ VACANCY_TECHNOLOGY : includes
+
+    SOURCE {
+        int id PK
+        string name
+        string base_url
+    }
+
+    COMPANY {
+        int id PK
+        string name
+        string website
+    }
+
+    LOCATION {
+        int id PK
+        string country
+        string city
+    }
+
+    SALARY {
+        int id PK
+        decimal salary_from
+        decimal salary_to
+        string currency
+        boolean gross
+    }
+
+    VACANCY {
+        int id PK
+        string external_id
+        string title
+        text description
+        string url
+        string employment_type
+        string experience
+        datetime published_at
+
+        int source_id FK
+        int company_id FK
+        int location_id FK
+        int salary_id FK
+    }
+
+    TECHNOLOGY {
+        int id PK
+        string name
+        string category
+    }
+
+    VACANCY_TECHNOLOGY {
+        int vacancy_id FK
+        int technology_id FK
+    }
