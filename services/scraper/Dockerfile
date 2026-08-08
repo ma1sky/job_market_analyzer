@@ -5,4 +5,3 @@ WORKDIR /app
 COPY requirement.txt .
 COPY ../scaper .
 COPY ../../../shared .
-

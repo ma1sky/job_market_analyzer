@@ -16,7 +16,7 @@ normalizes extracted data into a common DTO and publishes messages to Redis.
 - Parse source-specific data
 - Normalize vacancies
 - Handle retries
-- Publish VacancyDTO to Redis
+- Produce data to Kafka
 - Log scraping statistics
 
 ---
@@ -30,11 +30,11 @@ normalizes extracted data into a common DTO and publishes messages to Redis.
 ## C3 components
 
 ```mermaid
-flowchart LR
+flowchart TD
 
 sites["🌐 Job Sites"]
 
-redis[("🟥 Redis Queue")]
+kafka@{ shape: das, label: "💬 Apache Kafka" }
 
 subgraph scraper["🕷️ Scraper Service"]
 
@@ -72,11 +72,42 @@ hh --> normalize
 habr --> normalize
 remote --> normalize
 
-normalize -->|"Publish DTO"| redis
+normalize -->|"Produce"| kafka
+
+%% ============================================================
+%%                        STYLES (classDef)
+%% ============================================================
+
+classDef actor fill:#21262D,stroke:#8B949E,stroke-width:2px,color:#F0F6FC;
+
+classDef service fill:#1F2937,stroke:#58A6FF,stroke-width:2px,color:#F0F6FC;
+
+classDef database fill:#0E4429,stroke:#3FB950,stroke-width:2px,color:#F0F6FC;
+
+classDef cache fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef queue fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef dashboard fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+
+classDef external fill:#2D1B16,stroke:#FF7B72,stroke-width:2px,color:#F0F6FC;
+
+classDef storage fill:#0E4429,stroke:#2EA043,stroke-width:2px,color:#F0F6FC;
+
+classDef scheduler fill:#3A2F00,stroke:#D29922,stroke-width:2px,color:#F0F6FC;
+
+classDef message fill:#2D333B,stroke:#768390,stroke-width:1px,color:#F0F6FC;
+
+classDef brokerFill fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+%% ============================================================
+%%                 APPLYING STYLES (class)
+%% ===========================================================
 
 class scheduler,coordinator,hh,habr,remote,normalize service
 
 class redis cache
 
 class sites external
+class kafka brokerFill
 ```

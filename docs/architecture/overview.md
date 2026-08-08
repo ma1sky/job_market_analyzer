@@ -39,7 +39,7 @@ Shared infrastructure:
 ## High-Level Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
 
 %% ============================================================
 %% External Actors
@@ -48,40 +48,58 @@ flowchart LR
 user(["👤 User"])
 admin(["🛠️ Administrator"])
 
-sites["🌐 Job Sites<br/>HH • Habr Career • RemoteOK"]
-
-%% ============================================================
-%% System
-%% ============================================================
-
-subgraph system["🏢 Job Market Analyzer"]
-
-    dashboard["📈 Dashboard"]
-    app["🚀 Analytics API"]
-
-end
+hh["🌐 HH"]
+habr["🌐 Habr"]
+remoteok["🌐 RemoteOk"]
+system["🏢 Job Market Analyzer"]
+other["🌐 Other..."]
 
 %% ============================================================
 %% Relationships
 %% ============================================================
 
-user -->|"View dashboards"| dashboard
-dashboard -->|"REST API"| app
+user -->|"REST API"| system
 
-user -->|"REST API"| app
+admin -->|"Configure scraping"| system
 
-admin -->|"Configure scraping"| app
-
-app -->|"HTTPS"| sites
+system -->|"HTTPS"| hh
+system -->|"HTTPS"| habr
+system -->|"HTTPS"| remoteok
+system -->|"HTTPS"| other
 
 %% ============================================================
-%% Styles
+%%                        STYLES (classDef)
+%% ============================================================
+
+classDef actor fill:#21262D,stroke:#8B949E,stroke-width:2px,color:#F0F6FC;
+
+classDef service fill:#1F2937,stroke:#58A6FF,stroke-width:2px,color:#F0F6FC;
+
+classDef database fill:#0E4429,stroke:#3FB950,stroke-width:2px,color:#F0F6FC;
+
+classDef cache fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef queue fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef dashboard fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+
+classDef external fill:#2D1B16,stroke:#FF7B72,stroke-width:2px,color:#F0F6FC;
+
+classDef storage fill:#0E4429,stroke:#2EA043,stroke-width:2px,color:#F0F6FC;
+
+classDef scheduler fill:#3A2F00,stroke:#D29922,stroke-width:2px,color:#F0F6FC;
+
+classDef message fill:#2D333B,stroke:#768390,stroke-width:1px,color:#F0F6FC;
+
+classDef brokerFill fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+%% ============================================================
+%%                 APPLYING STYLES (class)
 %% ============================================================
 
 class user,admin actor
-class app service
-class dashboard dashboard
-class sites external
+class system service
+class hh,habr,other,remoteok external
 ```
 
 The system communicates with external job websites, processes collected data through an asynchronous pipeline and stores normalized information in PostgreSQL. Users interact with the platform through the Analytics API and the dashboard.
@@ -93,90 +111,79 @@ The system communicates with external job websites, processes collected data thr
 ```mermaid
 flowchart LR
 
-%% ============================================================
-%% External Actors
-%% ============================================================
-
 user(["👤 User"])
 admin(["🛠️ Administrator"])
 
-sites["🌐 Job Sites<br/>HH • Habr Career • RemoteOK"]
-
-%% ============================================================
-%% Job Market Analyzer
-%% ============================================================
-
 subgraph system["🏢 Job Market Analyzer"]
 
-    direction LR
-
-    %% ---------- Frontend ----------
     subgraph frontend["🖥️ Frontend"]
-        dashboard["📈 Dashboard<br/>React"]
+        dashboard["📈 Dashboard<br/>Next.js"]
     end
 
-    %% ---------- Backend ----------
-    subgraph backend["⚙️ Backend"]
-
-        analytics["🚀 Analytics Service<br/>FastAPI"]
-
+    subgraph services["⚙️ Application Services"]
+        subgraph messaging["📨 Messaging"]
+            kafka@{ shape: das, label: "💬 Apache Kafka" }
+        end
+        analytics["🚀 Analytics API<br/>FastAPI"]
         scraper["🕷️ Scraper Service<br/>Python"]
-
         etl["⚙️ ETL Service<br/>Python"]
-
     end
 
-    %% ---------- Infrastructure ----------
-    subgraph infrastructure["🗄️ Infrastructure"]
-
-        redis[("🟥 Redis<br/>Queue / Cache")]
-
+    subgraph data["🗄️ Data Infrastructure"]
+        redis[("🟥 Redis")]
         postgres[("🐘 PostgreSQL")]
+        clickhouse[("📊 ClickHouse")]
+    end
 
+    subgraph observability["📊 Observability"]
+        prometheus["🔥 Prometheus"]
+        grafana["📊 Grafana"]
     end
 
 end
 
-%% ============================================================
-%% User interactions
-%% ============================================================
+sites["🌐 Job Sites<br/>HH • Habr • RemoteOK"]
 
 user -->|"View dashboards"| dashboard
 user -->|"REST API"| analytics
 
 admin -->|"Configure scraping"| scraper
 
-%% ============================================================
-%% Internal communication
-%% ============================================================
-
 dashboard -->|"REST API"| analytics
 
 scraper -->|"HTTPS"| sites
-scraper -->|"Publish DTO"| redis
+scraper -->|"Publish events"| kafka
+kafka -->|"Consume events"| etl
 
-redis -->|"Consume"| etl
+etl -->|"Store data"| postgres
+etl -->|"Load analytics data"| clickhouse
 
-etl -->|"INSERT / UPDATE"| postgres
-
-analytics -->|"SELECT"| postgres
+analytics -->|"Query analytics"| clickhouse
 analytics -.->|"Cache"| redis
 
-%% ============================================================
-%% Styles
-%% ============================================================
+scraper -.->|"Metrics"| prometheus
+etl -.->|"Metrics"| prometheus
+analytics -.->|"Metrics"| prometheus
+
+prometheus -->|"Metrics"| grafana
+
+classDef actor fill:#21262D,stroke:#8B949E,stroke-width:2px,color:#F0F6FC;
+classDef service fill:#1F2937,stroke:#58A6FF,stroke-width:2px,color:#F0F6FC;
+classDef database fill:#0E4429,stroke:#3FB950,stroke-width:2px,color:#F0F6FC;
+classDef cache fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+classDef dashboard fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+classDef external fill:#2D1B16,stroke:#FF7B72,stroke-width:2px,color:#F0F6FC;
+classDef observability fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+classDef brokerFill fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
 
 class user,admin actor
-
-class dashboard dashboard
-
 class scraper,etl,analytics service
-
-class postgres database
-
+class dashboard dashboard
+class postgres,clickhouse database
 class redis cache
-
+class kafka brokerFill
 class sites external
+class prometheus,grafana observability
 ```
 
 The application is divided into independent services.
@@ -190,7 +197,11 @@ The application is divided into independent services.
 Infrastructure:
 
 * PostgreSQL — primary data storage.
-* Redis — queue and cache.
+* ClickHouse — analytics data storage.
+* Redis — cache.
+* Kafka — message broker.
+* Prometheus — collects metrics
+* Grafana — metrics analytics 
 
 ---
 

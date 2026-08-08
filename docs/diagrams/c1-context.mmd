@@ -1,4 +1,4 @@
-flowchart LR
+flowchart TD
 
 %% ============================================================
 %% External Actors
@@ -7,37 +7,55 @@ flowchart LR
 user(["👤 User"])
 admin(["🛠️ Administrator"])
 
-sites["🌐 Job Sites<br/>HH • Habr Career • RemoteOK"]
-
-%% ============================================================
-%% System
-%% ============================================================
-
-subgraph system["🏢 Job Market Analyzer"]
-
-    dashboard["📈 Dashboard"]
-    app["🚀 Analytics API"]
-
-end
+hh["🌐 HH"]
+habr["🌐 Habr"]
+remoteok["🌐 RemoteOk"]
+system["🏢 Job Market Analyzer"]
+other["🌐 Other..."]
 
 %% ============================================================
 %% Relationships
 %% ============================================================
 
-user -->|"View dashboards"| dashboard
-dashboard -->|"REST API"| app
+user -->|"REST API"| system
 
-user -->|"REST API"| app
+admin -->|"Configure scraping"| system
 
-admin -->|"Configure scraping"| app
-
-app -->|"HTTPS"| sites
+system -->|"HTTPS"| hh
+system -->|"HTTPS"| habr
+system -->|"HTTPS"| remoteok
+system -->|"HTTPS"| other
 
 %% ============================================================
-%% Styles
+%%                        STYLES (classDef)
+%% ============================================================
+
+classDef actor fill:#21262D,stroke:#8B949E,stroke-width:2px,color:#F0F6FC;
+
+classDef service fill:#1F2937,stroke:#58A6FF,stroke-width:2px,color:#F0F6FC;
+
+classDef database fill:#0E4429,stroke:#3FB950,stroke-width:2px,color:#F0F6FC;
+
+classDef cache fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef queue fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+classDef dashboard fill:#35264C,stroke:#BC8CFF,stroke-width:2px,color:#F0F6FC;
+
+classDef external fill:#2D1B16,stroke:#FF7B72,stroke-width:2px,color:#F0F6FC;
+
+classDef storage fill:#0E4429,stroke:#2EA043,stroke-width:2px,color:#F0F6FC;
+
+classDef scheduler fill:#3A2F00,stroke:#D29922,stroke-width:2px,color:#F0F6FC;
+
+classDef message fill:#2D333B,stroke:#768390,stroke-width:1px,color:#F0F6FC;
+
+classDef brokerFill fill:#4D3A12,stroke:#F2CC60,stroke-width:2px,color:#F0F6FC;
+
+%% ============================================================
+%%                 APPLYING STYLES (class)
 %% ============================================================
 
 class user,admin actor
-class app service
-class dashboard dashboard
-class sites external
+class system service
+class hh,habr,other,remoteok external
