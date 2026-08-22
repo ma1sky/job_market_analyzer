@@ -1,0 +1,40 @@
+{
+    "searches": [
+        {
+            "name": "python_intern",
+            "keywords": [
+                "Python"
+            ],
+            "experience": [
+                "intern"
+            ],
+            "locations": [
+                "remote"
+            ]
+        },
+        {
+            "name": "python_junior",
+            "keywords": [
+                "Python"
+            ],
+            "experience": [
+                "junior"
+            ],
+            "locations": [
+                "remote"
+            ]
+        },
+        {
+            "name": "python_middle",
+            "keywords": [
+                "Python"
+            ],
+            "experience": [
+                "middle"
+            ],
+            "locations": [
+                "remote"
+            ]
+        }
+    ]
+}

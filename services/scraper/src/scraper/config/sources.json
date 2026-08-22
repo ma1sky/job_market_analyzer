@@ -1,0 +1,26 @@
+{
+    "hh": {
+        "enabled": true,
+        "base_url": "https://api.hh.ru",
+        "endpoints": {
+            "vacancies": "/vacancies"
+        },
+        "timeout": 10,
+        "retry_count": 3,
+        "rate_limit": 5
+    },
+    "habr": {
+        "enabled": true,
+        "base_url": "https://career.habr.com",
+        "timeout": 10,
+        "retry_count": 3,
+        "rate_limit": 2
+    },
+    "remoteok": {
+        "enabled": true,
+        "base_url": "https://remoteok.com",
+        "timeout": 15,
+        "retry_count": 3,
+        "rate_limit": 2
+    }
+}
