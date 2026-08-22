@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "database": {
+    "dialect": "postgres"
+  },
+  "tables": [
+    {
+      "name": "vacancy",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Integer",
+          "primary_key": true,
+          "autoincrement": true,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "Interval",
+          "nullable": true
+        }
+      ],
+      "relationships": [
+        {
+          "name": "table_2",
+          "type": "many_to_one",
+          "target": "table_2",
+          "lazy": "select"
+        }
+      ],
+      "x": 144,
+      "y": 144
+    },
+    {
+      "name": "table_2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Integer",
+          "primary_key": true,
+          "autoincrement": true,
+          "nullable": false
+        },
+        {
+          "name": "vacancy_id",
+          "type": "Integer",
+          "nullable": true,
+          "foreign_key": "vacancy.id"
+        }
+      ],
+      "relationships": [
+        {
+          "name": "vacancy",
+          "type": "many_to_one",
+          "target": "vacancy",
+          "lazy": "select"
+        }
+      ],
+      "x": -216,
+      "y": 144
+    }
+  ],
+  "association_tables": []
+}
