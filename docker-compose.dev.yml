@@ -1,0 +1,6 @@
+services:
+  scraper:
+    volumes:
+      - ./services/scraper/src:/app/services/scraper/src
+      - ./shared/src:/app/shared/src
+    command: ["uv", "run", "--package", "scraper", "python", "-m", "scraper"]
